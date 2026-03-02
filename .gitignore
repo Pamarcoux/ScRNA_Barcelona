@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+##outputs
+outputs/*
+
+>>>>>>> gh-pages
 # History files
 .Rhistory
 .Rapp.history
