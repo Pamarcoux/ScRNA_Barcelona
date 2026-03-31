@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Paul Marcoux">
-<meta name="dcterms.date" content="2026-03-30">
+<meta name="dcterms.date" content="2026-03-31">
 
 <title>Sc_RNAseq_GAL9</title>
 <style>
@@ -87,7 +87,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#all-data" id="toc-all-data" class="nav-link" data-scroll-target="#all-data"><span class="header-section-number">1.2</span> All data</a>
   <ul class="collapse">
   <li><a href="#umap" id="toc-umap" class="nav-link" data-scroll-target="#umap"><span class="header-section-number">1.2.1</span> Umap</a></li>
-  <li><a href="#gal9-by-disease" id="toc-gal9-by-disease" class="nav-link" data-scroll-target="#gal9-by-disease"><span class="header-section-number">1.2.2</span> GAL9 by disease</a></li>
+  <li><a href="#celltype-repartition-per-sample" id="toc-celltype-repartition-per-sample" class="nav-link" data-scroll-target="#celltype-repartition-per-sample"><span class="header-section-number">1.2.2</span> CellType repartition per sample</a></li>
+  <li><a href="#gal9-by-disease" id="toc-gal9-by-disease" class="nav-link" data-scroll-target="#gal9-by-disease"><span class="header-section-number">1.2.3</span> GAL9 by disease</a></li>
   </ul></li>
   <li><a href="#monocytes-only" id="toc-monocytes-only" class="nav-link" data-scroll-target="#monocytes-only"><span class="header-section-number">1.3</span> Monocytes Only</a>
   <ul class="collapse">
@@ -97,9 +98,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#tcells-only" id="toc-tcells-only" class="nav-link" data-scroll-target="#tcells-only"><span class="header-section-number">1.4</span> Tcells Only</a>
   <ul class="collapse">
   <li><a href="#markers-in-t-cells" id="toc-markers-in-t-cells" class="nav-link" data-scroll-target="#markers-in-t-cells"><span class="header-section-number">1.4.1</span> Markers in T cells</a></li>
-  <li><a href="#marker-in-nk" id="toc-marker-in-nk" class="nav-link" data-scroll-target="#marker-in-nk"><span class="header-section-number">1.4.2</span> Marker in NK</a></li>
-  <li><a href="#bcells-umap" id="toc-bcells-umap" class="nav-link" data-scroll-target="#bcells-umap"><span class="header-section-number">1.4.3</span> BCells Umap</a></li>
-  <li><a href="#b-cells-repartition" id="toc-b-cells-repartition" class="nav-link" data-scroll-target="#b-cells-repartition"><span class="header-section-number">1.4.4</span> B Cells repartition</a></li>
+  </ul></li>
+  <li><a href="#nk-only" id="toc-nk-only" class="nav-link" data-scroll-target="#nk-only"><span class="header-section-number">1.5</span> NK Only</a>
+  <ul class="collapse">
+  <li><a href="#marker-in-nk" id="toc-marker-in-nk" class="nav-link" data-scroll-target="#marker-in-nk"><span class="header-section-number">1.5.1</span> Marker in NK</a></li>
+  </ul></li>
+  <li><a href="#bcells-only" id="toc-bcells-only" class="nav-link" data-scroll-target="#bcells-only"><span class="header-section-number">1.6</span> Bcells Only</a>
+  <ul class="collapse">
+  <li><a href="#bcells-umap" id="toc-bcells-umap" class="nav-link" data-scroll-target="#bcells-umap"><span class="header-section-number">1.6.1</span> BCells Umap</a></li>
+  <li><a href="#b-cells-repartition" id="toc-b-cells-repartition" class="nav-link" data-scroll-target="#b-cells-repartition"><span class="header-section-number">1.6.2</span> B Cells repartition</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -128,7 +135,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2026-03-30</p>
+      <p class="date">2026-03-31</p>
     </div>
   </div>
   
@@ -325,7 +332,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>###CellType repartition per sample</p>
+</section>
+<section id="celltype-repartition-per-sample" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="celltype-repartition-per-sample"><span class="header-section-number">1.2.2</span> CellType repartition per sample</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -336,8 +345,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="gal9-by-disease" class="level3" data-number="1.2.2">
-<h3 data-number="1.2.2" class="anchored" data-anchor-id="gal9-by-disease"><span class="header-section-number">1.2.2</span> GAL9 by disease</h3>
+<section id="gal9-by-disease" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="gal9-by-disease"><span class="header-section-number">1.2.3</span> GAL9 by disease</h3>
 <p><strong>Expression of GAL9 increase in tFl/DLBCL compared to FL.</strong></p>
 <div class="cell">
 <div class="cell-output-display">
@@ -587,7 +596,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>##NK Only</p>
+</section>
+</section>
+</section>
+<section id="nk-only" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="nk-only"><span class="header-section-number">1.5</span> NK Only</h2>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -606,10 +619,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-</section>
-</section>
-<section id="marker-in-nk" class="level3" data-number="1.4.2">
-<h3 data-number="1.4.2" class="anchored" data-anchor-id="marker-in-nk"><span class="header-section-number">1.4.2</span> Marker in NK</h3>
+<section id="marker-in-nk" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="marker-in-nk"><span class="header-section-number">1.5.1</span> Marker in NK</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -640,10 +651,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>##Bcells</p>
 </section>
-<section id="bcells-umap" class="level3" data-number="1.4.3">
-<h3 data-number="1.4.3" class="anchored" data-anchor-id="bcells-umap"><span class="header-section-number">1.4.3</span> BCells Umap</h3>
+</section>
+<section id="bcells-only" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="bcells-only"><span class="header-section-number">1.6</span> Bcells Only</h2>
+<section id="bcells-umap" class="level3" data-number="1.6.1">
+<h3 data-number="1.6.1" class="anchored" data-anchor-id="bcells-umap"><span class="header-section-number">1.6.1</span> BCells Umap</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -668,8 +681,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="b-cells-repartition" class="level3" data-number="1.4.4">
-<h3 data-number="1.4.4" class="anchored" data-anchor-id="b-cells-repartition"><span class="header-section-number">1.4.4</span> B Cells repartition</h3>
+<section id="b-cells-repartition" class="level3" data-number="1.6.2">
+<h3 data-number="1.6.2" class="anchored" data-anchor-id="b-cells-repartition"><span class="header-section-number">1.6.2</span> B Cells repartition</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -1247,7 +1260,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>        <span class="at">alpha =</span> <span class="fl">0.3</span></span>
 <span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>) </span>
 <span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>###CellType repartition per sample</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="fu">### CellType repartition per sample</span></span>
 <span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="in">```{r CellType repartition per sample }</span></span>
 <span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a><span class="in">pochi::MetaDataPlot(AllSample, group.by = "Cell_type", split.by = "Sample_code", as.freq = T) +</span></span>
 <span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="in">  labs(</span></span>
@@ -1563,7 +1576,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-418"><a href="#cb1-418" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-419"><a href="#cb1-419" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-420"><a href="#cb1-420" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb1-421"><a href="#cb1-421" aria-hidden="true" tabindex="-1"></a>##NK Only</span>
+<span id="cb1-421"><a href="#cb1-421" aria-hidden="true" tabindex="-1"></a><span class="fu">## NK Only</span></span>
 <span id="cb1-422"><a href="#cb1-422" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-425"><a href="#cb1-425" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb1-426"><a href="#cb1-426" aria-hidden="true" tabindex="-1"></a>Origin_distribution <span class="ot">&lt;-</span> pochi<span class="sc">::</span><span class="fu">MetaDataPlot</span>(AllSample, <span class="at">group.by =</span> <span class="st">"Cell_type"</span>, <span class="at">split.by =</span> <span class="st">"Origin"</span>, <span class="at">as.freq =</span> T) <span class="sc">+</span></span>
@@ -1660,7 +1673,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-521"><a href="#cb1-521" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-522"><a href="#cb1-522" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-523"><a href="#cb1-523" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb1-524"><a href="#cb1-524" aria-hidden="true" tabindex="-1"></a>##Bcells</span>
+<span id="cb1-524"><a href="#cb1-524" aria-hidden="true" tabindex="-1"></a><span class="fu">## Bcells Only</span></span>
 <span id="cb1-527"><a href="#cb1-527" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb1-528"><a href="#cb1-528" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">here</span>(<span class="st">"~/Postdoc/R/SC_Flex_TALYIES_July2024/Object_R/Seurat_obj_B_annoted.Robj"</span>))</span>
 <span id="cb1-529"><a href="#cb1-529" aria-hidden="true" tabindex="-1"></a></span>
