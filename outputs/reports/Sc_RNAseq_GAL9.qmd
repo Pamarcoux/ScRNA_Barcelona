@@ -32,6 +32,7 @@ execute:
 # #| include: false
 library(here)
 library(gtools)
+library(Seurat)
 source(here('src/00_Open_metadata.R'))
 source(here('src/01_Open_sc_files.R'))
 ```
@@ -44,7 +45,7 @@ knitr::kable(Data_info_patients)
 
 ```
 
-## All data
+## All Cell types
 
 ### Umap
 
@@ -67,171 +68,758 @@ DimPlot(AllSample,
 ) 
 ```
 
-### GAL9 by disease
+### Cell Type repartition per sample
+
+```{r CellType repartition per sample }
+pochi::MetaDataPlot(AllSample, group.by = "Cell_type", split.by = "Sample_code", as.freq = T) +
+  labs(
+    title = "",
+    x = "", # Éviter de répéter des informations évidentes
+    y = "Frequency",
+    fill = "Cell Type"
+  ) +
+  labs(fill = "Cell Type") +
+  theme_blood() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "bold")) # Inclinaison des labels
+```
+
+### GAL 1/3/9 by disease
+
 **Expression of GAL9 increase in tFl/DLBCL compared to FL.**
 
 ```{r}
 VlnPlot(AllSample,
-            features = c("LGALS9"),
+            features = c("LGALS1","LGALS3","LGALS9"),
             group.by = "Disease",
             pt.size = 0,
-            raster = FALSE
-)
+            raster = FALSE)
 ```
 
+**What Cell type are expressing GAL1/3/9 ?**
 
+**GAL1 is expressed mostly by Monocytes and NK Cells. Only GAL gene expressed by CD8 Tcells**
 
-**What Cell type are expressing GAL9? **
 ```{r}
-FeaturePlot(AllSample,
-            features = c("LGALS9"),
-            reduction = "umap_all",
-            split.by = "Disease",
-            pt.size = 0.01,
-            raster = FALSE
-)
+VlnPlot(AllSample,
+        features = c("LGALS1"),
+        group.by = "Disease",
+        split.by = "Cell_type",
+        pt.size = 0,
+        raster = FALSE)
+```
+
+```{r}
+VlnPlot(AllSample,
+        features = c("LGALS3"),
+        group.by = "Disease",
+        split.by = "Cell_type",
+        pt.size = 0,
+        raster = FALSE)
 ```
 
 **GAL9 is expressed mostly by Monocytes, and to a lesser extent by CD4 T-Cells and NK Cells.**
+
 ```{r}
 VlnPlot(AllSample,
         features = c("LGALS9"),
         group.by = "Disease",
         split.by = "Cell_type",
         pt.size = 0,
-        raster = FALSE
-)
+        raster = FALSE)
 ```
 
 ## Monocytes Only
 
 ```{r}
-#| cache: false
-AllSample_subset_monocytes <- subset(AllSample, Cell_type %in% "Monocytes")
+AllSample_subset_monocytes <- LoadSeuratRds(here("~/Postdoc/R/ScRNA_Barcelona/data/Seurat_obj/AllSample_subset_monocytes_cleaned_cca_rpca_integrated.rds"))
 ```
-### Gal9 in Monocytes
+
+#### Umap of Monocytes only by cluster and disease
+
+**Monocytes only from PBMC samples.**
+
+```{r}
+DimPlot(AllSample_subset_monocytes,
+            reduction = "umap.rpca",
+            group.by = "Origin",
+            pt.size = 0.01,
+            raster = FALSE,
+        label.size = 3) +
+  plot_layout(guides = "collect")
+```
+
+-   Filtering of low quality cells, Bcells, Tcells.
+
+-   Very few Monocytes from DLBCL samples -\> Removed from analysis.
+
+-   RPCA integration
+
+**Good integration between FL and tFL Samples**
+
+```{r}
+DimPlot(AllSample_subset_monocytes,
+            reduction = "umap.rpca",
+            group.by = "Disease",
+            pt.size = 0.01,
+            raster = FALSE) +
+  plot_layout(guides = "collect")
+```
+
+### GAL 1/3/9 in Monocytes
+
 ```{r}
 #| warning: false
 VlnPlot(AllSample_subset_monocytes,
+        features = c("LGALS1","LGALS3","LGALS9"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE)&
+  scale_fill_manual(values = c("#f8766d","#00ba38"))  # Custom fill colors_response_type
+
+  
+```
+
+### Identification of Monocytes
+
+**11 clusters identify**
+
+```{r}
+DimPlot(AllSample_subset_monocytes,
+            reduction = "umap.rpca",
+            group.by = "rpca_clusters",
+            pt.size = 0.01,
+            raster = FALSE) +
+  plot_layout(guides = "collect")
+```
+
+**DotPlot of Monocytes/Macrophages Markers**
+
+```{r}
+# 1. Define the canonical markers based on your DE results
+myeloid_markers <- c(
+  # Monocyte Lineage
+  "CD14","CCR2", "VCAN", "S100A9", "S100A8","ANXA1",  # Cluster 4: Early Classical
+  "F5",            
+  "PADI4", "ALOX5AP", "RETN", "SLC2A3",      # Cluster 2: Mature Classical
+
+  "IL1B", "CXCL8", "NLRP3", "TREM1",         # Cluster 1: Inflammatory Mac/Mono
+  
+  "ISG15", "IFIT1", "MX1", "SIGLEC1",        # Cluster 7: ISG-High (Interferon)
+  
+
+
+  # Macrophage-like
+
+  "VSIG4", "CD9", "SMAD7", "OLR1",           # Cluster 0: Resident Mac
+  "C1QA", "C1QB", "LIPA",            #  C1q+ Scavenging Mac
+  
+  # Non Classical
+  "CDKN1C", "FCGR3A", "HES4", "RHOC",        # Cluster 3: Non-classical
+  "SAT1", "HSPA6", "ITGAX", "LILRB2",        # Cluster 8: Activated Non-classical
+  
+  
+  # Dendritic Cells
+  "CLEC9A","C1orf54", "CADM1", "XCR1",       # Cluster 10: cDC1 (Villani et al. 2019)
+  "CD1C", "FCER1A", "CLEC10A",               # Cluster 6: cDC2 (Villani et al. 2019)
+
+  # Proliferation state
+  "MKI67", "TOP2A", "BIRC5", "CENPF"     # Cluster 9: Cycling Myeloid
+  
+  
+)
+# 2. Factor Order
+biological_order <- c(
+  "Early Classical Monocytes", 
+  "Proliferating Monocytes",
+  "Mature Classical Monocytes", 
+  "Activated Classical Monocytes", 
+  "IFN-stimulated Monocytes",
+  "CD14+ Intermediate Monocytes", 
+  "CD16+ Transitional Monocytes",
+  "CD16+ Non-classical Monocytes",
+  "CD11c+ Non-classical Monocytes",
+  "cDC1",
+  "cDC2"
+)
+
+
+# 3. Generate the DotPlot
+levels(AllSample_subset_monocytes) <- rev(biological_order)
+
+DotPlot(AllSample_subset_monocytes, features = myeloid_markers, dot.scale = 5) + 
+  RotatedAxis() + 
+  scale_colour_gradient2(low = "blue", mid = "white", high = "red") +
+  labs(title = "Myeloid Subset Canonical Markers", x = "Genes", y = "Cluster")+
+      theme(
+      axis.text.x = element_text(size = 8, face = "bold", color = "black"), # Labels des axes X
+      axis.text.y = element_text(size = 8, face = "bold", color = "black"),
+      axis.title = element_text(size = 8, face = "bold"),
+      axis.title.y = element_text(size = 8, face = "bold", color = "black"), # Labels des axes X
+      legend.title = element_text(size = 7, face = "bold"), # Titre de la légende
+      legend.text = element_text(size = 6, face = "bold"),
+      legend.box.spacing = unit(0.1, "cm"),
+      legend.key.size = unit(0.4, "cm"))
+levels(AllSample_subset_monocytes) <- (biological_order)
+
+
+```
+
+CLEC10A = CD301C FCGR3A = CD16 ITGAX = CD11c
+
+```{r}
+DimPlot(
+  AllSample_subset_monocytes,
+  reduction = "umap.rpca",
+  combine = , label.size = 5,
+  label = TRUE
+)+
+  theme_blood()
+```
+
+```{r}
+pochi::MetaDataPlot(AllSample_subset_monocytes, group.by = "Cell_type_monocytes", split.by = "Disease", as.freq = T) +
+  labs(
+    title = "",
+    x = "", # Éviter de répéter des informations évidentes
+    y = "Frequency",
+    fill = "Cell Type"
+  ) +
+  labs(fill = "Cell Type") +
+  # scale_fill_brewer(palette = "GnBu", direction = -1) +
+  # theme_blood() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "bold")) # Inclinaison des labels
+```
+
+#### Violin Plots of Monocytes Markers
+**GAL1 **
+```{r}
+VlnPlot(AllSample_subset_monocytes, features = "LGALS1",pt.size = 0)
+FeaturePlot(AllSample_subset_monocytes, features = "LGALS1",pt.size = 0.01, raster = FALSE,
+            split.by = "Disease", reduction = "umap.rpca",) &
+    scale_color_distiller(palette = "RdYlBu") 
+
+VlnPlot(AllSample_subset_monocytes, features = "LGALS1",pt.size = 0,split.by = "Disease")&
+  scale_fill_manual(values = c("#f8766d","#00ba38"))
+```
+
+**GAL3 **
+```{r}
+VlnPlot(AllSample_subset_monocytes, features = "LGALS3",pt.size = 0)
+FeaturePlot(AllSample_subset_monocytes, features = "LGALS3",pt.size = 0.01, raster = FALSE,
+            split.by = "Disease", reduction = "umap.rpca",) &
+    scale_color_distiller(palette = "RdYlBu") 
+
+VlnPlot(AllSample_subset_monocytes, features = "LGALS3",pt.size = 0,split.by = "Disease")&
+  scale_fill_manual(values = c("#f8766d","#00ba38"))
+```
+
+**GAL9 **
+```{r}
+VlnPlot(AllSample_subset_monocytes, features = "LGALS9",pt.size = 0)
+FeaturePlot(AllSample_subset_monocytes, features = "LGALS9",pt.size = 0.01, raster = FALSE,
+            split.by = "Disease", reduction = "umap.rpca",) &
+    scale_color_distiller(palette = "RdYlBu") 
+
+VlnPlot(AllSample_subset_monocytes, features = "LGALS9",pt.size = 0,split.by = "Disease")&
+  scale_fill_manual(values = c("#f8766d","#00ba38"))
+
+```
+
+## Tcells Only
+
+```{r T cells R Object}
+load(file = file.path(data_dir, 'Object_R/Seurat_obj_T_annoted.Robj'))
+Tcells_joined <- JoinLayers(Tcells)
+
+Tcells_joined$Disease <- factor(Tcells_joined$Disease, levels = c("FL", "tFL", "DLBCL"))
+
+rm(Tcells)
+```
+
+```{r}
+Tcells_TCD4 <- subset(Tcells_joined, subset = Cell_type == "CD4")
+
+DimPlot(Tcells_TCD4,
+        reduction = "umap",
+        label = TRUE,
+        pt.size = 0.01,
+        raster = FALSE,
+        alpha = 0.3)
+```
+
+```{r Dot Plot T cell cluster}
+  markers <- c(
+    "CD3D", "CD3E", "CD3G", "CD4", "CD8A", "CD8B2", "NCAM1", "NELL2", "TCF7", "LEF1", "CCR7", "PTPRC", "SELL", "IL7R", "B3GAT1", "SESN3", "CD28", "LTB", "TNFRSF4", "EOMES", "GZMA", "GZMB", "GZMK", "GZMH",
+    "PRF1", "TOX", "TOX2", "HAVCR2", "LAG3", "TIGIT", "FASLG", "KLRB1", "ICOS", "CXCL13", "CXCR5", "PDCD1",
+    "IL6R", "CD40LG", "FOXP3", "CTLA4", "IL2RA", "TYROBP", "TOP2A", "MKI67", "CX3CR1", "FCER1G", "BCL6"
+  )
+
+DotPlot(Tcells_TCD4, features = markers, assay = "RNA", dot.scale = 5) +
+    RotatedAxis() + 
+    scale_color_gradient2(low = "blue", mid = "white", high = "firebrick2") +
+    labs(title = "Tcells Canonical Markers", x = "Genes", y = "Cluster")+
+      theme(
+      axis.text.x = element_text(size = 8, face = "bold", color = "black"), # Labels des axes X
+      axis.text.y = element_text(size = 8, face = "bold", color = "black"),
+      axis.title = element_text(size = 8, face = "bold"),
+      axis.title.y = element_text(size = 8, face = "bold", color = "black"), # Labels des axes X
+      legend.title = element_text(size = 7, face = "bold"), # Titre de la légende
+      legend.text = element_text(size = 6, face = "bold"),
+      legend.box.spacing = unit(0.1, "cm"),
+      legend.key.size = unit(0.4, "cm"))
+```
+
+### Markers in T cells
+**GAL are expressed in ...**
+```{r}
+VlnPlot(Tcells_TCD4,
+        features = c("LGALS1","LGALS3","LGALS9"),
+        group.by = "Disease",
+        pt.size = 0.01,
+        raster = FALSE)
+```
+**GAL are expressed in ...**
+```{r}
+VlnPlot(Tcells_TCD4,
+        features = c("LGALS1","LGALS3","LGALS9"),
+        group.by = "T_clusters",
+        pt.size = 0.01,
+        raster = FALSE)
+```
+
+```{r}
+VlnPlot(Tcells_TCD4,
+        features = c("LGALS1"),
+        group.by = "Disease",
+        split.by = "T_clusters",
+        pt.size = 0,
+        raster = FALSE)
+        
+        VlnPlot(Tcells_TCD4,
+        features = c("LGALS3"),
+        group.by = "Disease",
+        split.by = "T_clusters",
+        pt.size = 0,
+        raster = FALSE)
+        
+        
+VlnPlot(Tcells_TCD4,
         features = c("LGALS9"),
         group.by = "Disease",
-        split.by = "Cell_type",
+        split.by = "T_clusters",
+        pt.size = 0,
+        raster = FALSE
+)
+#TIM3
+VlnPlot(Tcells_TCD4,
+        features = c("HAVCR2"),
+        group.by = "Disease",
+        split.by = "T_clusters",
         pt.size = 0,
         raster = FALSE
 )
 
-FeaturePlot(AllSample_subset_monocytes,
-            features = c("LGALS9"),
-            reduction = "umap_all",
-            split.by = "Disease",
-            pt.size = 0.01,
-            raster = FALSE) +
-  plot_layout(guides = "collect") &
-  xlim(c(0,10)) &
-  ylim(c(7,NA))
-
-```
-
-
-### Identification of Monocytes 
-#### Umap of Monocytes only by cluster and disease
-**Monocytes only from PBMC samples.**
-```{r}
-DimPlot(AllSample_subset_monocytes,
-            reduction = "umap_all",
-            group.by = "Origin",
-            pt.size = 0.01,
-            raster = FALSE) +
-  plot_layout(guides = "collect") &
-  xlim(c(0,10)) &
-  ylim(c(7,NA))
-```
-**Very few Monocytes from DLBCL samples**
-```{r}
-
-DimPlot(AllSample_subset_monocytes,
-            reduction = "umap_all",
-            group.by = "Disease",
-            pt.size = 0.01,
-            raster = FALSE) +
-  plot_layout(guides = "collect") &
-  xlim(c(0,10)) &
-  ylim(c(7,NA))
-```
-
-```{r}
-DimPlot(AllSample_subset_monocytes,
-            reduction = "umap_all",
-            group.by = "integrated_snn_res.0.3",
-            pt.size = 0.01,
-            raster = FALSE) +
-  plot_layout(guides = "collect") &
-  xlim(c(0,10)) &
-  ylim(c(7,NA))
-
-```
- 
-
-#### Feature Plots of Monocytes Markers
-```{r Identification Macrophages}
-markers_scRNA <- c(
-  # Pan-monocytes/macrophages
-  "CD14", "FCGR3A", "CSF1R", "CD68",
-  
-  # Mono classiques vs non-classiques
-  "S100A8", "VCAN", "CX3CR1", "CDKN1C",
-  
-  # Sous-types macrophages
-  "FCN1",    # inflammatoires
-  "FOLR2",   # résidents
-  "SPP1",    # fibrotiques
-  "TREM2",   # immunosuppresseurs
-
-  
-  # Activation / polarisation
-  "IL1B", "TNF", "MRC1", "CD163",
-  
-  # Prolifération
-  "MKI67"
+#41BB
+VlnPlot(Tcells_TCD4,
+        features = c("TNFRSF9"),
+        group.by = "Disease",
+        split.by = "T_clusters",
+        pt.size = 0,
+        raster = FALSE
 )
 
-FeaturePlot(AllSample_subset_monocytes,
-            features = c("CD14", "FCGR3A", "CSF1R", "CD68"),
-            reduction = "umap_all",
-            pt.size = 0.01,
-            raster = FALSE) +
-  plot_layout(guides = "collect") &
-  xlim(c(0,10)) &
-  ylim(c(7,NA))
+```
 
-FeaturePlot(AllSample_subset_monocytes,
-            features = c("S100A8", "VCAN", "CX3CR1", "CDKN1C"),
-            reduction = "umap_all",
-            pt.size = 0.01,
-            raster = FALSE) +
-  plot_layout(guides = "collect") &
-  xlim(c(0,10)) &
-  ylim(c(7,NA))
+### Treg only
 
-FeaturePlot(AllSample_subset_monocytes,
-            features = c("FCN1", "FOLR2", "SPP1", "TREM2","MKI67"),
-            reduction = "umap_all",
-            pt.size = 0.01,
-            raster = FALSE) +
-  plot_layout(guides = "collect") &
-  xlim(c(0,10)) &
-  ylim(c(7,NA))
+```{r}
+Tcells_TCD4_Treg <- subset(Tcells_joined, subset = T_clusters == "CD4_Treg")
 
-FeaturePlot(AllSample_subset_monocytes,
-            features = c("IL1B", "TNF", "MRC1", "CD163"),
-            reduction = "umap_all",
-            pt.size = 0.01,
-            raster = FALSE) +
-  plot_layout(guides = "collect") &
-  xlim(c(0,10)) &
-  ylim(c(7,NA))
+VlnPlot(Tcells_TCD4_Treg,
+        features = c("LGALS1"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE
+)
+
+
+VlnPlot(Tcells_TCD4_Treg,
+        features = c("LGALS3"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE
+)
+
+VlnPlot(Tcells_TCD4_Treg,
+        features = c("LGALS9"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE
+)
+
+VlnPlot(Tcells_TCD4_Treg,
+        features = c("HAVCR2"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE
+)
+
+VlnPlot(Tcells_TCD4_Treg,
+        features = c("TNFRSF9"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE
+)
 
 ```
 
+## NK Only
 
+```{r}
+
+
+Origin_distribution <- pochi::MetaDataPlot(AllSample, group.by = "Cell_type", split.by = "Origin", as.freq = T) +
+  labs(
+    title = "",
+    x = "", # Éviter de répéter des informations évidentes
+    y = "Frequency",
+    fill = "Cell Type"
+  ) +
+  labs(fill = "Cell Type") +
+  # scale_fill_brewer(palette = "GnBu", direction = -1) +
+  theme_blood() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "bold")) # Inclinaison des labels
+
+Disease_distribution <- pochi::MetaDataPlot(AllSample, group.by = "Cell_type", split.by = "Disease", as.freq = T) +
+  labs(
+    title = "",
+    x = "", # Éviter de répéter des informations évidentes
+    y = "Frequency",
+    fill = "Cell Type"
+  ) +
+  labs(fill = "Cell Type") +
+  # scale_fill_brewer(palette = "GnBu", direction = -1) +
+  theme_blood() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "bold")) # Inclinaison des labels
+
+plot_grid(Origin_distribution, Disease_distribution,
+          ncol = 2)
+
+```
+
+```{r}
+Tcells_NK <- subset(Tcells_joined, subset = Cell_type == "NK")
+Origin_distribution <- pochi::MetaDataPlot(Tcells_NK, group.by = "Cell_type", split.by = "Origin", as.freq = F) +
+  labs(
+    title = "",
+    x = "", # Éviter de répéter des informations évidentes
+    y = "Cells Number",
+    fill = "Cell Type"
+  ) +
+  labs(fill = "Cell Type") +
+  # scale_fill_brewer(palette = "GnBu", direction = -1) +
+  theme_blood() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "bold")) # Inclinaison des labels
+
+Disease_distribution <- pochi::MetaDataPlot(Tcells_NK, group.by = "Cell_type", split.by = "Disease", as.freq = F) +
+  labs(
+    title = "",
+    x = "", # Éviter de répéter des informations évidentes
+    y = "Numbers",
+    fill = "Cell Type"
+  ) +
+  labs(fill = "Cell Type") +
+  # scale_fill_brewer(palette = "GnBu", direction = -1) +
+  theme_blood() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "bold")) # Inclinaison des labels
+
+plot_grid(Origin_distribution, Disease_distribution,
+          ncol = 2)
+
+```
+
+### Markers in NK
+
+```{r}
+VlnPlot(Tcells_NK,
+        features = c("LGALS1"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE
+)
+
+VlnPlot(Tcells_NK,
+        features = c("LGALS3"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE
+)
+
+VlnPlot(Tcells_NK,
+        features = c("LGALS9"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE
+)
+#TIM3
+VlnPlot(Tcells_NK,
+        features = c("HAVCR2"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE
+)
+
+#41BB
+VlnPlot(Tcells_NK,
+        features = c("TNFRSF9"),
+        group.by = "Disease",
+        pt.size = 0,
+        raster = FALSE
+)
+```
+
+## Bcells Only
+
+```{r}
+load(here("~/Postdoc/R/SC_Flex_TALYIES_July2024/Object_R/Seurat_obj_B_annoted.Robj"))
+
+```
+
+```{r}
+Metadata_Bcell <- AllBcells@meta.data %>%
+    select(orig.ident, type, Lymphomatype,Cluster_name,Response_type_total) %>%
+    mutate(Sample_code = gsub("\\.", "_", orig.ident)) %>%
+    mutate(cell_id = gsub("\\.", "_", rownames(.))) %>%
+    mutate(
+      Sample_code = ifelse(Sample_code == "FL5_PB1", "FL5_PB1_3", Sample_code),
+      Sample_code = ifelse(Sample_code == "FL6_PB1", "FL6_PB1_2", Sample_code)
+    ) |> 
+  mutate(B_cell_type = case_when(
+    # Cluster_name == "Circulating_B_Cells" ~ "Circulating_B_Tumor_B_Cells",
+    Cluster_name %in% c("tFL4_PB1_2","DLBCL6_LN1_2","DLBCL2_LN1_2") ~ "Proliferating_Tumor_B_Cells",
+    Cluster_name == "Healthy_B_Cells" ~ "Healthy_B_Cells",
+    Cluster_name == "KI67+_B_Cells" ~ "Proliferating_Tumor_B_Cells",
+    TRUE ~ "Non_Prolif_Tumor_B_Cells"
+  )) |> 
+  mutate(Lymphomatype = factor(Lymphomatype, levels = c("FL","tFL","DLBCL")),
+         Sample_code_paper = Sample_code,
+         Sample_code_paper = recode(Sample_code_paper, !!!Replacement_table),
+         Sample_code = factor(Sample_code, levels = Sample_order),
+         type = if_else(type == "PB", "PBMC", type)
+)
+
+  AllBcells <- AddMetaData(AllBcells, metadata = Metadata_Bcell$orig.ident, col.name = "orig.ident")
+  AllBcells <- AddMetaData(AllBcells, metadata = Metadata_Bcell$Sample_code_paper, col.name = "Sample_code_paper")
+  AllBcells <- AddMetaData(AllBcells, metadata = Metadata_Bcell$Sample_code, col.name = "Sample_code")
+  AllBcells <- AddMetaData(AllBcells, metadata = Metadata_Bcell$B_cell_type, col.name = "B_cell_type")
+  AllBcells <- AddMetaData(AllBcells, metadata = Metadata_Bcell$type, col.name = "Origin")
+  AllBcells <- AddMetaData(AllBcells, metadata = Metadata_Bcell$Lymphomatype, col.name = "Disease")
+  
+```
+
+**Expression of GAL genes in all B are low**
+```{r}
+VlnPlot(AllBcells, features = c("LGALS1","LGALS3","LGALS9"),pt.size = 0,group.by = "Disease")
+```
+
+### BCells Umap
+
+```{r}
+DimPlot(AllBcells,
+        reduction = "full.umap",
+        label = FALSE,
+        pt.size = 0.01,
+        raster = FALSE,
+        group.by = "Sample_code",
+        alpha = 0.3
+) 
+
+FeaturePlot(AllBcells,
+        reduction = "full.umap",
+        features = "MKI67",
+        pt.size = 0.01,
+        raster = FALSE,
+        alpha = 0.3
+) 
+
+DimPlot(AllBcells,
+        reduction = "full.umap",
+        label = FALSE,
+        pt.size = 0.01,
+        raster = FALSE,
+        group.by = "B_cell_type",
+        alpha = 0.3
+) 
+
+```
+
+### B Cells repartition
+
+```{r}
+pochi::MetaDataPlot(AllBcells, group.by = "B_cell_type", split.by = "Sample_code", as.freq = T) +
+  labs(
+    title = "",
+    x = "", 
+    y = "Frequency",
+    fill = "Cell Type"
+  ) +
+  labs(fill = "Cell Type") +
+  theme_blood() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "bold")) # Inclinaison des labels
+
+pochi::MetaDataPlot(AllBcells, group.by = "B_cell_type", split.by = "Sample_code", as.freq = F) +
+  labs(
+    title = "",
+    x = "", 
+    y = "Cell Numbers",
+    fill = "Cell Type"
+  ) +
+  labs(fill = "Cell Type") +
+  theme_blood() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, face = "bold")) # Inclinaison des labels
+```
+
+### Markers in B Cells
+**Expression of GAL genes in B cell types**
+```{r}
+VlnPlot(AllBcells, features = c("LGALS1","LGALS3","LGALS9"),pt.size = 0, group.by = "B_cell_type")
+
+```
+
+```{r}
+rm(AllBcells)
+```
+
+## Correlation with Glofitamab response 
+### All cell type 
+```{r}
+
+AllSample_subset <- subset(AllSample, Sample_code %in% Sample_list)
+rm(AllSample)
+VlnPlot(AllSample_subset,
+            features = c("LGALS1","LGALS3","LGALS9"),
+            group.by = "Response_type_total",
+            pt.size = 0,
+            raster = FALSE)
+rm(AllSample_subset)
+```
+### In Monocytes
+**Only One sample Low responder vs 5 High Responders**
+```{r}
+AllSample_subset_monocytes_response <- subset(AllSample_subset_monocytes, Sample_code %in% Sample_list)
+VlnPlot(AllSample_subset_monocytes_response,
+            features = c("LGALS1","LGALS3","LGALS9"),
+            group.by = "Response_type_total",
+            pt.size = 0,
+            raster = FALSE)
+
+rm(AllSample_subset_monocytes)
+```
+```{r}
+# AllSample_subset_monocytes_metadata <- AllSample_subset_monocytes@meta.data |> 
+#   mutate(cell_id = rownames(AllSample_subset_monocytes_metadata)) |> 
+#   mutate(cell_id = gsub("[.]", "_", cell_id))
+  
+```
+
+### In T-cells
+```{r}
+
+Tcells_CD4_subset <- subset(Tcells_TCD4, Sample_code %in% Sample_list)
+
+VlnPlot(Tcells_CD4_subset,
+            features = c("LGALS1","LGALS3","LGALS9"),
+            group.by = "Response_type_total",
+            pt.size = 0,
+            raster = FALSE)
+rm(Tcells_TCD4)
+```
+
+```{r}
+# VlnPlot(Tcells_CD4_subset,
+#         features = c("LGALS1"),
+#         group.by = "Response_type_total",
+#         split.by = "T_clusters",
+#         pt.size = 0,
+#         raster = FALSE) & 
+#   scale_fill_manual(values = colors_response_type)
+#         
+#         VlnPlot(Tcells_CD4_subset,
+#         features = c("LGALS3"),
+#         group.by = "Response_type_total",
+#         split.by = "T_clusters",
+#         pt.size = 0,
+#         raster = FALSE)
+#         
+#         
+# VlnPlot(Tcells_CD4_subset,
+#         features = c("LGALS9"),
+#         group.by = "Response_type_total",
+#         split.by = "T_clusters",
+#         pt.size = 0,
+#         raster = FALSE)
+```
+
+#### Treg Only
+
+```{r}
+Tcells_CD4_Treg_subset <- subset(Tcells_TCD4_Treg, Sample_code %in% Sample_list)
+VlnPlot(Tcells_CD4_Treg_subset,
+        features = c("LGALS1","LGALS3","LGALS9"),
+        group.by = "Response_type_total",
+        pt.size = 0,
+        raster = FALSE
+)
+```
+
+```{r}
+  # Tcells_subset <- subset(Tcells, Cell_type %in% c("CD4") & Sample_code %in% Sample_list)
+  # Tcells_subset <- subset(Tcells, T_clusters %in% c("CD4_Treg") & Sample_code %in% Sample_list)
+
+```
+
+```{r}
+#   gene <- paste0("LGALS9")
+#
+#   data_Expression <- FetchData(Tcells_subset, vars = gene) %>%
+#     mutate(cell_id = rownames(.)) %>%
+#     mutate(cell_id = gsub("[.]", "_", cell_id)) %>%
+#     left_join(Tcells_Sample_metadata)
+#
+#   grouped_data <- data_Expression %>%
+#     group_by(B_cell_depletion_total_glofi, Sample_code, Response_type_total) %>%
+#     summarise(mean_gene = mean(!!sym(gene), na.rm = TRUE), count = n())
+#
+#   # Calculer le modèle linéaire pour obtenir R^2
+#   correlation_result <- cor.test(grouped_data$B_cell_depletion_total_glofi, grouped_data$mean_gene, use = "pairwise.complete.obs")
+#   r_value <- correlation_result$estimate # Coefficient de corrélation
+#   p_value <- correlation_result$p.value # Valeur p
+#
+#   p <- ggplot(data = grouped_data, aes(x = B_cell_depletion_total_glofi, y = mean_gene)) +
+#     geom_smooth(method = "lm", color = "black", fill = "gray80", linewidth = 0.8) +
+#     geom_point(aes(fill = Response_type_total),
+#       shape = 21,
+#       color = "black",
+#       position = position_dodge(0),
+#       size = 3, stroke = 0.5, alpha = 0.9
+#     ) +
+#     scale_fill_manual(values = colors_response_type) +
+#     labs(
+#       title = "",
+#       x = "B-Cell depletion at D6",
+#       y = expression(bolditalic("LGALS9") * bold(" in CD3 T-Cells"))
+#     ) +
+#     # theme_blood_fig3() +
+#     theme(legend.position = "none") # Ajuster la taille du texte de l'axe y
+#
+#   # Ajouter l'annotation
+#  p + annotation_custom(
+#     grob = textGrob(
+#       label = sprintf("R = %.4f\n𝑝 = %.2e", r_value, p_value),
+#       x = unit(0.05, "npc"), y = unit(0.25, "npc"),
+#       hjust = 0, vjust = 1,
+#       gp = gpar(fontsize = 8, col = "black", face = "bold")
+#     )
+#   )
+```
 

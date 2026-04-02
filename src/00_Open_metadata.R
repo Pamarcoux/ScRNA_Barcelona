@@ -213,6 +213,7 @@ sample_colors_tFL_DLBCL <- setNames(colors_tFL_DLBCL, Sample_list_tFL_DLBCL)
 
 ## Combine les 2 palettes###
 sample_colors_all <- c(sample_colors_FL, sample_colors_tFL_DLBCL)
+# saveRDS(sample_colors_all,"~/Downloads/")
 
 Tcells_Sample_metadata <- read.csv(file.path(data_dir, "Metadata/Tcells_Sample_metadata.csv")) %>% mutate(
   Screening = as.logical(Screening),
