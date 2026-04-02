@@ -1,8 +1,8 @@
 ---
 title: "Sc_RNAseq_GAL9"
 author: "Paul Marcoux"
-date: today
-date-format: "YYYY-MM-DD"
+# date: tomorrow
+# date-format: "YYYY-MM-DD"
 format: 
   html:
     page-layout: full
@@ -378,7 +378,7 @@ VlnPlot(Tcells_TCD4,
         pt.size = 0,
         raster = FALSE)
 ```
-**Expression of **
+**Expression of GAL1/3/9 in T CD4 subsets**
 ```{r}
 VlnPlot(Tcells_TCD4,
         features = c("LGALS1","LGALS3","LGALS9"),
@@ -490,36 +490,15 @@ plot_grid(Origin_distribution, Disease_distribution,
 
 ```{r}
 VlnPlot(Tcells_NK,
-        features = c("LGALS1"),
+        features = c("LGALS1","LGALS3","LGALS9"),
         group.by = "Disease",
         pt.size = 0,
         raster = FALSE
 )
 
+#TIM3 41BB
 VlnPlot(Tcells_NK,
-        features = c("LGALS3"),
-        group.by = "Disease",
-        pt.size = 0,
-        raster = FALSE
-)
-
-VlnPlot(Tcells_NK,
-        features = c("LGALS9"),
-        group.by = "Disease",
-        pt.size = 0,
-        raster = FALSE
-)
-#TIM3
-VlnPlot(Tcells_NK,
-        features = c("HAVCR2"),
-        group.by = "Disease",
-        pt.size = 0,
-        raster = FALSE
-)
-
-#41BB
-VlnPlot(Tcells_NK,
-        features = c("TNFRSF9"),
+        features = c("HAVCR2","TNFRSF9"),
         group.by = "Disease",
         pt.size = 0,
         raster = FALSE
@@ -652,7 +631,7 @@ VlnPlot(AllSample_subset,
 rm(AllSample_subset)
 ```
 ### In Monocytes
-**Only One sample Low responder vs 5 High Responders**
+**/!\ Only One sample Low responder vs 5 High Responders**
 ```{r}
 AllSample_subset_monocytes_response <- subset(AllSample_subset_monocytes, Sample_code %in% Sample_list)
 VlnPlot(AllSample_subset_monocytes_response,
@@ -669,6 +648,17 @@ rm(AllSample_subset_monocytes)
 #   mutate(cell_id = gsub("[.]", "_", cell_id))
   
 ```
+
+### In NK cells
+```{r}
+Tcells_NK <- subset(Tcells_joined, subset = Cell_type == "NK" & Sample_code %in% Sample_list)
+VlnPlot(Tcells_NK,
+            features = c("LGALS1","LGALS3","LGALS9"),
+            group.by = "Response_type_total",
+            pt.size = 0,
+            raster = FALSE)
+```
+
 
 ### In CD4 T-cells
 ```{r}
