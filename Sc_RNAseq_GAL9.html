@@ -828,29 +828,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Sc_RNAseq_GAL9_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="1152"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Sc_RNAseq_GAL9_files/figure-html/unnamed-chunk-36-2.png" class="img-fluid figure-img" width="1152"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Sc_RNAseq_GAL9_files/figure-html/unnamed-chunk-36-3.png" class="img-fluid figure-img" width="1152"></p>
-</figure>
-</div>
-</div>
-</div>
 <section id="treg-only-1" class="level4" data-number="1.7.3.1">
 <h4 data-number="1.7.3.1" class="anchored" data-anchor-id="treg-only-1"><span class="header-section-number">1.7.3.1</span> Treg Only</h4>
 <div class="cell">
@@ -2057,28 +2034,28 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-786"><a href="#cb1-786" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb1-787"><a href="#cb1-787" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-790"><a href="#cb1-790" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb1-791"><a href="#cb1-791" aria-hidden="true" tabindex="-1"></a><span class="fu">VlnPlot</span>(Tcells_CD4_subset,</span>
-<span id="cb1-792"><a href="#cb1-792" aria-hidden="true" tabindex="-1"></a>        <span class="at">features =</span> <span class="fu">c</span>(<span class="st">"LGALS1"</span>),</span>
-<span id="cb1-793"><a href="#cb1-793" aria-hidden="true" tabindex="-1"></a>        <span class="at">group.by =</span> <span class="st">"Response_type_total"</span>,</span>
-<span id="cb1-794"><a href="#cb1-794" aria-hidden="true" tabindex="-1"></a>        <span class="at">split.by =</span> <span class="st">"T_clusters"</span>,</span>
-<span id="cb1-795"><a href="#cb1-795" aria-hidden="true" tabindex="-1"></a>        <span class="at">pt.size =</span> <span class="dv">0</span>,</span>
-<span id="cb1-796"><a href="#cb1-796" aria-hidden="true" tabindex="-1"></a>        <span class="at">raster =</span> <span class="cn">FALSE</span>) <span class="sc">&amp;</span> </span>
-<span id="cb1-797"><a href="#cb1-797" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> colors_response_type)</span>
-<span id="cb1-798"><a href="#cb1-798" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb1-799"><a href="#cb1-799" aria-hidden="true" tabindex="-1"></a>        <span class="fu">VlnPlot</span>(Tcells_CD4_subset,</span>
-<span id="cb1-800"><a href="#cb1-800" aria-hidden="true" tabindex="-1"></a>        <span class="at">features =</span> <span class="fu">c</span>(<span class="st">"LGALS3"</span>),</span>
-<span id="cb1-801"><a href="#cb1-801" aria-hidden="true" tabindex="-1"></a>        <span class="at">group.by =</span> <span class="st">"Response_type_total"</span>,</span>
-<span id="cb1-802"><a href="#cb1-802" aria-hidden="true" tabindex="-1"></a>        <span class="at">split.by =</span> <span class="st">"T_clusters"</span>,</span>
-<span id="cb1-803"><a href="#cb1-803" aria-hidden="true" tabindex="-1"></a>        <span class="at">pt.size =</span> <span class="dv">0</span>,</span>
-<span id="cb1-804"><a href="#cb1-804" aria-hidden="true" tabindex="-1"></a>        <span class="at">raster =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-805"><a href="#cb1-805" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb1-806"><a href="#cb1-806" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb1-807"><a href="#cb1-807" aria-hidden="true" tabindex="-1"></a><span class="fu">VlnPlot</span>(Tcells_CD4_subset,</span>
-<span id="cb1-808"><a href="#cb1-808" aria-hidden="true" tabindex="-1"></a>        <span class="at">features =</span> <span class="fu">c</span>(<span class="st">"LGALS9"</span>),</span>
-<span id="cb1-809"><a href="#cb1-809" aria-hidden="true" tabindex="-1"></a>        <span class="at">group.by =</span> <span class="st">"Response_type_total"</span>,</span>
-<span id="cb1-810"><a href="#cb1-810" aria-hidden="true" tabindex="-1"></a>        <span class="at">split.by =</span> <span class="st">"T_clusters"</span>,</span>
-<span id="cb1-811"><a href="#cb1-811" aria-hidden="true" tabindex="-1"></a>        <span class="at">pt.size =</span> <span class="dv">0</span>,</span>
-<span id="cb1-812"><a href="#cb1-812" aria-hidden="true" tabindex="-1"></a>        <span class="at">raster =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-791"><a href="#cb1-791" aria-hidden="true" tabindex="-1"></a><span class="co"># VlnPlot(Tcells_CD4_subset,</span></span>
+<span id="cb1-792"><a href="#cb1-792" aria-hidden="true" tabindex="-1"></a><span class="co">#         features = c("LGALS1"),</span></span>
+<span id="cb1-793"><a href="#cb1-793" aria-hidden="true" tabindex="-1"></a><span class="co">#         group.by = "Response_type_total",</span></span>
+<span id="cb1-794"><a href="#cb1-794" aria-hidden="true" tabindex="-1"></a><span class="co">#         split.by = "T_clusters",</span></span>
+<span id="cb1-795"><a href="#cb1-795" aria-hidden="true" tabindex="-1"></a><span class="co">#         pt.size = 0,</span></span>
+<span id="cb1-796"><a href="#cb1-796" aria-hidden="true" tabindex="-1"></a><span class="co">#         raster = FALSE) &amp; </span></span>
+<span id="cb1-797"><a href="#cb1-797" aria-hidden="true" tabindex="-1"></a><span class="co">#   scale_fill_manual(values = colors_response_type)</span></span>
+<span id="cb1-798"><a href="#cb1-798" aria-hidden="true" tabindex="-1"></a><span class="co">#         </span></span>
+<span id="cb1-799"><a href="#cb1-799" aria-hidden="true" tabindex="-1"></a><span class="co">#         VlnPlot(Tcells_CD4_subset,</span></span>
+<span id="cb1-800"><a href="#cb1-800" aria-hidden="true" tabindex="-1"></a><span class="co">#         features = c("LGALS3"),</span></span>
+<span id="cb1-801"><a href="#cb1-801" aria-hidden="true" tabindex="-1"></a><span class="co">#         group.by = "Response_type_total",</span></span>
+<span id="cb1-802"><a href="#cb1-802" aria-hidden="true" tabindex="-1"></a><span class="co">#         split.by = "T_clusters",</span></span>
+<span id="cb1-803"><a href="#cb1-803" aria-hidden="true" tabindex="-1"></a><span class="co">#         pt.size = 0,</span></span>
+<span id="cb1-804"><a href="#cb1-804" aria-hidden="true" tabindex="-1"></a><span class="co">#         raster = FALSE)</span></span>
+<span id="cb1-805"><a href="#cb1-805" aria-hidden="true" tabindex="-1"></a><span class="co">#         </span></span>
+<span id="cb1-806"><a href="#cb1-806" aria-hidden="true" tabindex="-1"></a><span class="co">#         </span></span>
+<span id="cb1-807"><a href="#cb1-807" aria-hidden="true" tabindex="-1"></a><span class="co"># VlnPlot(Tcells_CD4_subset,</span></span>
+<span id="cb1-808"><a href="#cb1-808" aria-hidden="true" tabindex="-1"></a><span class="co">#         features = c("LGALS9"),</span></span>
+<span id="cb1-809"><a href="#cb1-809" aria-hidden="true" tabindex="-1"></a><span class="co">#         group.by = "Response_type_total",</span></span>
+<span id="cb1-810"><a href="#cb1-810" aria-hidden="true" tabindex="-1"></a><span class="co">#         split.by = "T_clusters",</span></span>
+<span id="cb1-811"><a href="#cb1-811" aria-hidden="true" tabindex="-1"></a><span class="co">#         pt.size = 0,</span></span>
+<span id="cb1-812"><a href="#cb1-812" aria-hidden="true" tabindex="-1"></a><span class="co">#         raster = FALSE)</span></span>
 <span id="cb1-813"><a href="#cb1-813" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb1-814"><a href="#cb1-814" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-815"><a href="#cb1-815" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Treg Only</span></span>
