@@ -325,7 +325,7 @@ VlnPlot(AllSample_subset_monocytes, features = "LGALS9",pt.size = 0,split.by = "
 
 ```
 
-## Tcells Only
+## CD4 Tcells Only
 
 ```{r T cells R Object}
 load(file = file.path(data_dir, 'Object_R/Seurat_obj_T_annoted.Robj'))
@@ -370,64 +370,36 @@ DotPlot(Tcells_TCD4, features = markers, assay = "RNA", dot.scale = 5) +
 ```
 
 ### Markers in T cells
-**GAL are expressed in ...**
+**GAL1 is expressed in FL, tFL and  DLBCL samples whereas GAL9 is mostly expressed in DLBCL samples**
 ```{r}
 VlnPlot(Tcells_TCD4,
         features = c("LGALS1","LGALS3","LGALS9"),
         group.by = "Disease",
-        pt.size = 0.01,
+        pt.size = 0,
         raster = FALSE)
 ```
-**GAL are expressed in ...**
+**Expression of **
 ```{r}
 VlnPlot(Tcells_TCD4,
         features = c("LGALS1","LGALS3","LGALS9"),
         group.by = "T_clusters",
+        pt.size = 0.00,
+        raster = FALSE)
+```
+**TIM3 and 41BB expressions are low but maybe expressed a bit more in Treg?**
+```{r}
+VlnPlot(Tcells_TCD4,
+        features = c("HAVCR2","TNFRSF9"),
+        group.by = "Disease",
         pt.size = 0.01,
         raster = FALSE)
 ```
-
 ```{r}
 VlnPlot(Tcells_TCD4,
-        features = c("LGALS1"),
-        group.by = "Disease",
-        split.by = "T_clusters",
-        pt.size = 0,
+        features = c("HAVCR2","TNFRSF9"),
+        group.by = "T_clusters",
+        pt.size = 0.01,
         raster = FALSE)
-        
-        VlnPlot(Tcells_TCD4,
-        features = c("LGALS3"),
-        group.by = "Disease",
-        split.by = "T_clusters",
-        pt.size = 0,
-        raster = FALSE)
-        
-        
-VlnPlot(Tcells_TCD4,
-        features = c("LGALS9"),
-        group.by = "Disease",
-        split.by = "T_clusters",
-        pt.size = 0,
-        raster = FALSE
-)
-#TIM3
-VlnPlot(Tcells_TCD4,
-        features = c("HAVCR2"),
-        group.by = "Disease",
-        split.by = "T_clusters",
-        pt.size = 0,
-        raster = FALSE
-)
-
-#41BB
-VlnPlot(Tcells_TCD4,
-        features = c("TNFRSF9"),
-        group.by = "Disease",
-        split.by = "T_clusters",
-        pt.size = 0,
-        raster = FALSE
-)
-
 ```
 
 ### Treg only
@@ -436,41 +408,17 @@ VlnPlot(Tcells_TCD4,
 Tcells_TCD4_Treg <- subset(Tcells_joined, subset = T_clusters == "CD4_Treg")
 
 VlnPlot(Tcells_TCD4_Treg,
-        features = c("LGALS1"),
-        group.by = "Disease",
-        pt.size = 0,
-        raster = FALSE
-)
-
-
-VlnPlot(Tcells_TCD4_Treg,
-        features = c("LGALS3"),
+        features = c("LGALS1","LGALS3","LGALS9"),
         group.by = "Disease",
         pt.size = 0,
         raster = FALSE
 )
 
 VlnPlot(Tcells_TCD4_Treg,
-        features = c("LGALS9"),
+        features = c("HAVCR2","TNFRSF9"),
         group.by = "Disease",
-        pt.size = 0,
-        raster = FALSE
-)
-
-VlnPlot(Tcells_TCD4_Treg,
-        features = c("HAVCR2"),
-        group.by = "Disease",
-        pt.size = 0,
-        raster = FALSE
-)
-
-VlnPlot(Tcells_TCD4_Treg,
-        features = c("TNFRSF9"),
-        group.by = "Disease",
-        pt.size = 0,
-        raster = FALSE
-)
-
+        pt.size = 0.01,
+        raster = FALSE)
 ```
 
 ## NK Only
@@ -722,7 +670,7 @@ rm(AllSample_subset_monocytes)
   
 ```
 
-### In T-cells
+### In CD4 T-cells
 ```{r}
 
 Tcells_CD4_subset <- subset(Tcells_TCD4, Sample_code %in% Sample_list)

@@ -2,7 +2,9 @@
 =======
 ##outputs
 outputs/*
-
+test*
+data/*
+.~lock*
 >>>>>>> gh-pages
 # History files
 .Rhistory
